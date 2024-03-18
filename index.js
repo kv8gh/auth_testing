@@ -2,16 +2,23 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const authRoutes = require('./auth');
+const path = require('path')
 const  userRoutes = require('./routes/userRoutes');
+const userResponses = require('./routes/userResponses')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 app.use(bodyParser.json());
 app.use(express.static('public'))
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://smritidoneria:2rT32KuKe2auYEan@cluster0.ozto3jo.mongodb.net/devsoc", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to MongoDB');
     })
@@ -20,6 +27,7 @@ mongoose.connect("mongodb+srv://smritidoneria:2rT32KuKe2auYEan@cluster0.ozto3jo.
     });
 
 app.use('/user', userRoutes);
+app.use('/question',userResponses);
 
 
 app.listen(PORT, () => {
